@@ -1,5 +1,6 @@
 package com.example.ncpmaps.config;
 
+import com.example.ncpmaps.service.NcpGeolocationService;
 import com.example.ncpmaps.service.NcpMapApiService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -63,6 +64,7 @@ public class NcpClientConfig {
     @Bean
     public RestClient ncpGeolocationClient() {
         return RestClient.builder()
+                .baseUrl("https://geolocation.apigw.ntruss.com/geolocation/v2/geoLocation")
                 .requestInitializer(request -> {
                     HttpHeaders requestHeaders = request.getHeaders();
 
@@ -109,4 +111,12 @@ public class NcpClientConfig {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @Bean
+    public NcpGeolocationService geolocationService() {
+        return HttpServiceProxyFactory.builderFor(RestClientAdapter.create(ncpGeolocationClient()))
+                .build()
+                .createClient(NcpGeolocationService.class);
+    }
+
 }
