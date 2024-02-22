@@ -3,6 +3,7 @@ package com.example.ncpmaps;
 import com.example.ncpmaps.dto.*;
 import com.example.ncpmaps.dto.direction.DirectionNcpResponse;
 import com.example.ncpmaps.dto.rgeocoding.RGeoResponseDto;
+import com.example.ncpmaps.service.NaviService;
 import com.example.ncpmaps.service.NcpMapApiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,7 @@ import java.util.Map;
 @RequestMapping("navigate")
 @RequiredArgsConstructor
 public class NaviController {
-    private final NcpMapApiService mapApiService;
+    private final NaviService service;
 
     // 두 좌표를 받아 이동경로를 반환하는 메서드
     @PostMapping("points")
@@ -29,13 +30,8 @@ public class NaviController {
             @RequestBody
             NaviWithPointsDto dto
     ) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("start", dto.getStart().toQueryValue());
-        params.put("goal", dto.getGoal().toQueryValue());
-        DirectionNcpResponse response = mapApiService.direction5(params);
-        log.info(response.toString());
-        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
-    }
+        return service.twoPointRoute(dto);
+     }
 
     // 하나의 좌표를 입력받아, 주소를 반환하는 메서드
     @PostMapping("get-address")
